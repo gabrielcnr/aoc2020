@@ -14,7 +14,7 @@ fields = {
 
 
 class Validator:
-	"""
+    """
     byr (Birth Year) - four digits; at least 1920 and at most 2002.
     iyr (Issue Year) - four digits; at least 2010 and at most 2020.
     eyr (Expiration Year) - four digits; at least 2020 and at most 2030.
@@ -25,91 +25,91 @@ class Validator:
     ecl (Eye Color) - exactly one of: amb blu brn gry grn hzl oth.
     pid (Passport ID) - a nine-digit number, including leading zeroes.
     cid (Country ID) - ignored, missing or not.
-	"""
+    """
 
-	@classmethod
-	def _validate_year(cls, year, ndigits, min_year, max_year):
-		try:
-			return (len(year) == ndigits) and (min_year <= int(year) <= max_year)
-		except Exception:
-			return False
+    @classmethod
+    def _validate_year(cls, year, ndigits, min_year, max_year):
+        try:
+            return (len(year) == ndigits) and (min_year <= int(year) <= max_year)
+        except Exception:
+            return False
 
-	@classmethod
-	def validate_byr(cls, year):
-		return cls._validate_year(year, 4, 1920, 2002)
+    @classmethod
+    def validate_byr(cls, year):
+        return cls._validate_year(year, 4, 1920, 2002)
 
-	@classmethod
-	def validate_iyr(cls, year):
-		return cls._validate_year(year, 4, 2010, 2020)
+    @classmethod
+    def validate_iyr(cls, year):
+        return cls._validate_year(year, 4, 2010, 2020)
 
-	@classmethod
-	def validate_eyr(cls, year):
-		return cls._validate_year(year, 4, 2020, 2030)
+    @classmethod
+    def validate_eyr(cls, year):
+        return cls._validate_year(year, 4, 2020, 2030)
 
-	@classmethod
-	def validate_pid(cls, pid):
-		return re.match(r"^\d{9}$", pid) is not None
+    @classmethod
+    def validate_pid(cls, pid):
+        return re.match(r"^\d{9}$", pid) is not None
 
-	@classmethod
-	def validate_ecl(cls, ecl):
-		return ecl in {"amb", "blu", "brn", "gry", "grn", "hzl", "oth"}
+    @classmethod
+    def validate_ecl(cls, ecl):
+        return ecl in {"amb", "blu", "brn", "gry", "grn", "hzl", "oth"}
 
-	@classmethod
-	def validate_hcl(cls, hcl):
-		return re.match(r"^#[0-9a-f]{6}$", hcl) is not None
+    @classmethod
+    def validate_hcl(cls, hcl):
+        return re.match(r"^#[0-9a-f]{6}$", hcl) is not None
 
-	@classmethod
-	def validate_hgt(cls, hgt):
-		m = re.match(r"^(\d+)(cm|in)$", hgt)
-		if m is not None:
-			height = int(m.group(1))
-			unit = m.group(2)
-			if unit == "cm":
-				return 150 <= height <= 193
-			else:
-				return 59 <= height <= 76
-		return False
+    @classmethod
+    def validate_hgt(cls, hgt):
+        m = re.match(r"^(\d+)(cm|in)$", hgt)
+        if m is not None:
+            height = int(m.group(1))
+            unit = m.group(2)
+            if unit == "cm":
+                return 150 <= height <= 193
+            else:
+                return 59 <= height <= 76
+        return False
 
-	@classmethod
-	def validate_cid(cls, cid):
-		return True
+    @classmethod
+    def validate_cid(cls, cid):
+        return True
 
 
 def iter_passports(batch):
-	passport = {}
-	for line in batch.split("\n"):
-		if not line.strip():
-			yield passport
-			passport = {}
-		else:
-			passport.update(dict(part.split(":") for part in line.split()))
-	if passport:
-		yield passport
+    passport = {}
+    for line in batch.split("\n"):
+        if not line.strip():
+            yield passport
+            passport = {}
+        else:
+            passport.update(dict(part.split(":") for part in line.split()))
+    if passport:
+        yield passport
 
 
 def is_valid(passport):
-	""" validation for part 1 """
-	diff = set(passport) ^ fields
-	return diff <= {"cid"}
+    """ validation for part 1 """
+    diff = set(passport) ^ fields
+    return diff <= {"cid"}
 
 
 def is_valid_2(passport):
-	""" validation for part 2 """
-	if not is_valid(passport):
-		return False
-	for field, value in passport.items():
-		validate_func = getattr(Validator, f"validate_{field}")
-		if not validate_func(value):
-			return False
-	return True
+    """ validation for part 2 """
+    if not is_valid(passport):
+        return False
+    for field, value in passport.items():
+        validate_func = getattr(Validator, f"validate_{field}")
+        if not validate_func(value):
+            return False
+    return True
 
 
 def part1(batch):
-	return sum(1 for p in iter_passports(batch) if is_valid(p))
+    return sum(1 for p in iter_passports(batch) if is_valid(p))
 
 
 def part2(batch):
-	return sum(1 for p in iter_passports(batch) if is_valid_2(p))
+    return sum(1 for p in iter_passports(batch) if is_valid_2(p))
 
 
 TEST_PART_1 = """\
@@ -129,8 +129,8 @@ iyr:2011 ecl:brn hgt:59in"""
 
 
 def test_part1():
-	assert [True, False, True, False] == [is_valid(p) for p in iter_passports(TEST_PART_1)]
-	assert 2 == part1(TEST_PART_1)
+    assert [True, False, True, False] == [is_valid(p) for p in iter_passports(TEST_PART_1)]
+    assert 2 == part1(TEST_PART_1)
 
 
 TEST_PART_2_INVALID_PASSPORTS = """\
@@ -167,35 +167,35 @@ iyr:2010 hgt:158cm hcl:#b6652a ecl:blu byr:1944 eyr:2021 pid:093154719
 
 
 def test_part2_invalid():
-	assert not any(is_valid_2(p) for p in iter_passports(TEST_PART_2_INVALID_PASSPORTS))
+    assert not any(is_valid_2(p) for p in iter_passports(TEST_PART_2_INVALID_PASSPORTS))
 
 
 def test_part2_valid():
-	assert all(is_valid_2(p) for p in iter_passports(TEST_PART_2_VALID_PASSPORTS))
+    assert all(is_valid_2(p) for p in iter_passports(TEST_PART_2_VALID_PASSPORTS))
 
 
 def test_validators():
-	assert Validator.validate_byr("2002")
-	assert not Validator.validate_byr("2003")
+    assert Validator.validate_byr("2002")
+    assert not Validator.validate_byr("2003")
 
-	assert Validator.validate_hgt("60in")
-	assert Validator.validate_hgt("190cm")
-	assert not Validator.validate_hgt("190in")
-	assert not Validator.validate_hgt("190")
+    assert Validator.validate_hgt("60in")
+    assert Validator.validate_hgt("190cm")
+    assert not Validator.validate_hgt("190in")
+    assert not Validator.validate_hgt("190")
 
-	assert Validator.validate_hcl("#123abc")
-	assert not Validator.validate_hcl("#123abz")
-	assert not Validator.validate_hcl("123abc")
+    assert Validator.validate_hcl("#123abc")
+    assert not Validator.validate_hcl("#123abz")
+    assert not Validator.validate_hcl("123abc")
 
-	assert Validator.validate_ecl("brn")
-	assert not Validator.validate_ecl("wat")
+    assert Validator.validate_ecl("brn")
+    assert not Validator.validate_ecl("wat")
 
-	assert Validator.validate_pid("000000001")
-	assert not Validator.validate_pid("0123456789")
+    assert Validator.validate_pid("000000001")
+    assert not Validator.validate_pid("0123456789")
 
 
 
 if __name__ == "__main__":
-	batch = open("day04_input.txt").read()
-	print("Part 1 - total valid passports:", part1(batch))
-	print("Part 2 - total valid passports:", part2(batch))
+    batch = open("day04_input.txt").read()
+    print("Part 1 - total valid passports:", part1(batch))
+    print("Part 2 - total valid passports:", part2(batch))
