@@ -13,6 +13,12 @@ def part1():
 	return max(get_seat_id(encoded_seat)
 		for encoded_seat in open("day05_input.txt"))
 
+def part2():
+	seats = sorted(get_seat_id(s) for s in open("day05_input.txt"))
+	min_seat, max_seat = seats[0], seats[-1]
+	my_seat, = set(range(min_seat, max_seat + 1)) - set(seats)
+	return my_seat
+
 
 def test_part1():
 	assert (44, 5) == decode_seat("FBFBBFFRLR")
@@ -30,3 +36,4 @@ def test_part1():
 
 if __name__ == "__main__":
 	print(f"Max seat ID: {part1()}")
+	print(f"My seat is: {part2()}")
