@@ -59,7 +59,38 @@ def part1(input_):
 	return m.accumulator
 
 
+def part2(input_):
+	def iter_jmp_or_nop_indexes():
+		for i, instruction in enumerate(input_):
+			operation, _ = instruction.split()
+			if operation in ["jmp", "nop"]:
+				yield i
+
+	for index_to_change_operation in iter_jmp_or_nop_indexes():
+		modified_input = input_[:]
+		instruction_to_modify = modified_input[index_to_change_operation]
+		if instruction_to_modify.startswith("jmp"):
+			modified_input[index_to_change_operation] = instruction_to_modify.replace("jmp", "nop")
+		elif instruction_to_modify.startswith("nop"):
+			modified_input[index_to_change_operation] = instruction_to_modify.replace("nop", "jmp")
+		m = Machine()
+		try:
+			m.run(modified_input)
+		except InfiniteLoopException:
+			continue
+		else:
+			return m.accumulator
+
+
+def test_part2():
+	assert 8 == part2(TEST_INPUT.splitlines())
+
+
 if __name__ == "__main__":
 	program = open("day08_input.txt").readlines()
 	part1_accumulator = part1(program)
 	print(f"Part 1 - accumulator =", part1_accumulator)
+
+	part2_accumulator = part2(program)
+	print(f"Part 2 - accumulator =", part2_accumulator)
+
