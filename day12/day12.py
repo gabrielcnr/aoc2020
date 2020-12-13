@@ -110,4 +110,4 @@ def part2(input_):
 if __name__ == '__main__':
     input_ = open("day12_input.txt").readlines()
     print("Part 1:", part1(input_))
-    print("Part 2:", part2(input_))
+    print("Part 2:", part2  (input_))
