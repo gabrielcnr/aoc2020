@@ -13,7 +13,8 @@ def game(numbers):
             if len(calls[last]) == 1:  # it was the first time
                 spoken_num = 0
             else:
-                *_, next_to_last_call, last_call = calls[last]
+                last_calls = calls[last]
+                next_to_last_call, last_call = last_calls[-2], last_calls[-1]
                 spoken_num = last_call - next_to_last_call
 
         yield spoken_num
@@ -24,7 +25,7 @@ def game(numbers):
 
 def part1(input_numbers, play_until=2020):
     for i, spoken_num in enumerate(game(input_numbers), 1):
-        if i == 2020:
+        if i == play_until:
             return spoken_num
 
 
@@ -54,3 +55,4 @@ if __name__ == "__main__":
     input_numbers = [15, 12, 0, 14, 3, 1]
     print("Part 1", part1(input_numbers))
 
+    print("Part 2", part1(input_numbers, 30000000))
