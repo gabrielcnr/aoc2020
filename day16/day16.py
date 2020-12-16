@@ -93,19 +93,49 @@ def produce_my_ticket(X):
     # if len(valid_tickets)== 1:
     #     valid_tickets = valid_tickets * 2
 
-    fields = []
-    for nums in zip(*valid_tickets):
-        found = False
-        for field, rule in rules.items():
-            if all(eval(rule, {"x": n}) for n in nums):
-                fields.append(field)
-                found = True
-                break
-        if found:
-            del rules[field]
+    possible = {}
+    for field, rule in rules.items():
+        positions = []
 
-    my_ticket = dict(zip(fields, [int(n) for n in my_ticket[0].split(",")]))
-    import pdb; pdb.set_trace()
+        for pos, nums in enumerate(zip(*valid_tickets)):
+            if all(eval(rule, {"x": n}) for n in nums):
+                positions.append(pos)
+
+        possible[field] = positions
+
+# (Pdb) pp possible
+# {'arrival location': [11],
+#  'arrival platform': [1, 3, 4, 5, 6, 8, 11, 12, 13],
+#  'arrival station': [3, 5, 6, 8, 11, 12, 13],
+#  'arrival track': [5, 11],
+#  'class': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16, 17, 18, 19],
+#  'departure date': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 17, 18],
+#  'departure location': [1, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 17],
+#  'departure platform': [1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 17, 18],
+#  'departure station': [1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 17],
+#  'departure time': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 17, 18, 19],
+#  'departure track': [1, 3, 4, 5, 6, 7, 8, 11, 12, 13, 17],
+#  'duration': [3, 5, 8, 11, 13],
+#  'price': [5, 11, 13],
+#  'route': [1, 3, 5, 6, 8, 11, 12, 13],
+#  'row': [5, 8, 11, 13],
+#  'seat': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+#  'train': [3, 5, 6, 8, 11, 13],
+#  'type': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16, 17, 18, 19],
+#  'wagon': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 18, 19],
+#  'zone': [1, 3, 4, 5, 6, 7, 8, 11, 12, 13]}
+# (Pdb)
+    final_positions = [None] * len(possible)
+    for field in sorted(possible, key=lambda k: len(possible[k])):
+        # each iteration one position at least is sorted
+        if len(possible[field]) == 1:
+            pos, = possible[field]
+            for k, v in possible.items():
+                if pos in v:
+                    v.remove(pos)
+            final_positions[pos] = field
+
+    my_ticket = dict(zip(final_positions, [int(n) for n in my_ticket[0].split(",")]))
     return my_ticket
 
 
