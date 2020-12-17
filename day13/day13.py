@@ -42,6 +42,9 @@ def test_part1():
     assert 295 == part1(TEST_INPUT)
 
 
+def test_part2():
+    3, 11 = 
+
 if __name__ == '__main__':
     input_ = open("day13_input.txt").read()
     print("Part 1", part1(input_))
