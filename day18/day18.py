@@ -4,10 +4,12 @@ def iter_expressions(expr):
     for c in expr:
         if c == "(":
             parens += 1
-            e += c
+            if parens > 1: # the first open parentheses we don't include
+                e += c
         elif c == ")":
             parens -= 1
-            e += c
+            if parens > 0: # the last close parentheses we don't include
+                e += c
         elif c == " " and parens == 0:
             yield e
             e = ""
@@ -19,8 +21,6 @@ def iter_expressions(expr):
 def calc(expr):
     if isinstance(expr, int):
         return expr
-    if expr[0] == "(" and expr[-1] == ")" and expr.count("(") == 1:  # TODO: isso aqui ta ruim
-        expr = expr[1:-1]
     stack = list(iter_expressions(expr))
     while len(stack) > 1:
         left, op, right, *stack_tail = stack
@@ -37,12 +37,12 @@ def test_calc_simplest():
 
 def test_iter_expressions():
     assert ["7"] == list(iter_expressions("7"))
-    assert ["2", "*", "(3 + 4)"] == list(iter_expressions("2 * (3 + 4)"))
-    assert ["2", "*", "(3 + (4 * 2))"] == list(iter_expressions("2 * (3 + (4 * 2))"))
+    assert ["2", "*", "3 + 4"] == list(iter_expressions("2 * (3 + 4)"))
+    assert ["2", "*", "3 + (4 * 2)"] == list(iter_expressions("2 * (3 + (4 * 2))"))
 
 
 def test_calc_parentheses():
-    # assert 14 == calc("2 * (3 + 4)")
+    assert 14 == calc("2 * (3 + 4)")
     assert 6 == calc("(1 + 2) * (1 + 1)")
 
 
@@ -55,11 +55,6 @@ def test_part1_calc():
 
 
 def part1(input_: str):
-    for e in input_.splitlines():
-        try:
-            calc(e)
-        except Exception:
-            import pdb; pdb.set_trace()
     return sum(calc(expr) for expr in input_.splitlines())
 
 
