@@ -55,7 +55,6 @@ def build_allergens_mapping(foods):
                     removed = True
                     break
 
-    import pdb; pdb.set_trace()
     return d
 
 
@@ -80,6 +79,20 @@ def test_part1():
     assert 5 == part1(TEST_INPUT)
 
 
+def test_part2():
+    assert "mxmxvkd,sqjhc,fvjkl" == part2(TEST_INPUT)
+
+
+def part2(foods):
+    allergens_mapping = build_allergens_mapping(foods)
+    ingredients = []
+    for allergen in sorted(allergens_mapping):
+        ingredient, = allergens_mapping[allergen]
+        ingredients.append(ingredient)
+    return ",".join(ingredients)
+
+
 if __name__ == "__main__":
     input_ = open("input21.txt").readlines()
     print("Part 1:", part1(input_))
+    print("Part 2:", part2(input_))
